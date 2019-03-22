@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Disk">
+      <UniqueIdentifier>{54f31b5d-8e0d-463b-bed8-fb943edc70bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Disk\Block">
+      <UniqueIdentifier>{01039cda-5bb1-434c-8ce3-efd86346c68b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Disk\Block\SuperBlock">
+      <UniqueIdentifier>{d2f16762-1645-43ef-a69f-b0fac9ab6c7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Disk\Block\SuperBlock\DirectoryBlock">
+      <UniqueIdentifier>{674c5006-c2b1-4342-b5a2-7247c76e4d97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Disk">
+      <UniqueIdentifier>{234e5c02-4245-4dee-baed-852e8a024e07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Disk\Block">
+      <UniqueIdentifier>{44841e91-39f9-4816-91da-cb8f215bea0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Disk\Block\SuperBlock">
+      <UniqueIdentifier>{c583e498-0ea1-4c4c-b4ac-54810c12b53c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Disk\Block\SuperBlock\DirectoryBlock">
+      <UniqueIdentifier>{cbcc31ca-b770-4a4c-bbf1-276726d8a650}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Disk.cpp">
+      <Filter>Source Files\Disk</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\AbstractDiskBlock.cpp">
+      <Filter>Source Files\Disk\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\ContiguousDiskBlock.cpp">
+      <Filter>Source Files\Disk\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\CustomFileInformation.cpp">
+      <Filter>Source Files\Disk\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperDiskBlock.cpp">
+      <Filter>Source Files\Disk\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock.cpp">
+      <Filter>Source Files\Disk\Block\SuperBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperBlock\VolumeControlBlock.cpp">
+      <Filter>Source Files\Disk\Block\SuperBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\AbstractFileInformation.cpp">
+      <Filter>Source Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\ContiguousFileInformation.cpp">
+      <Filter>Source Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\IndexedFileInformation.cpp">
+      <Filter>Source Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\LinkedFileInformation.cpp">
+      <Filter>Source Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Disk.h">
+      <Filter>Header Files\Disk</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\DiskAllocationMethod.h">
+      <Filter>Header Files\Disk</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\AbstractDiskBlock.h">
+      <Filter>Header Files\Disk\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\ContiguousDiskBlock.h">
+      <Filter>Header Files\Disk\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperDiskBlock.h">
+      <Filter>Header Files\Disk\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperBlock\VolumeControlBlock.h">
+      <Filter>Header Files\Disk\Block\SuperBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock.h">
+      <Filter>Header Files\Disk\Block\SuperBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\LinkedFileInformation.h">
+      <Filter>Header Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\IndexedFileInformation.h">
+      <Filter>Header Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\CustomFileInformation.h">
+      <Filter>Header Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\ContiguousFileInformation.h">
+      <Filter>Header Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\AbstractFileInformation.h">
+      <Filter>Header Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SampleCSV.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
