@@ -18,8 +18,6 @@ public:
     int getFileName() const;
     void setFileName(int fileName);
 
-    virtual void reset() = 0;
-
     virtual string toString() const = 0;
 
     AbstractFileInformation(const AbstractFileInformation &) = default;

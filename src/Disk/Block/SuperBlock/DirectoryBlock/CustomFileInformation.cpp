@@ -24,13 +24,6 @@ void CustomFileInformation::setLength(const int length)
     this->length = length;
 }
 
-void CustomFileInformation::reset()
-{
-    fileName = -1;
-    startBlockIndex = -1;
-    length = -1;
-}
-
 string CustomFileInformation::toString() const
 {
     if (fileName == -1 || startBlockIndex == -1 || length == -1)

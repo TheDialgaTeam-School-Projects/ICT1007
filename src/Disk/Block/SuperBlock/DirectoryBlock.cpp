@@ -1,33 +1,8 @@
 #include "DirectoryBlock.h"
 
-#include "DirectoryBlock/ContiguousFileInformation.h"
-#include "DirectoryBlock/CustomFileInformation.h"
-#include "DirectoryBlock/IndexedFileInformation.h"
-#include "DirectoryBlock/LinkedFileInformation.h"
-
-DirectoryBlock::DirectoryBlock(const int blockSize, const DiskAllocationMethod diskAllocationMethod)
+DirectoryBlock::DirectoryBlock(const int blockSize, const DiskAllocationMethod diskAllocationMethod):
+    AbstractDiskBlock(0, blockSize)
 {
-    for (auto i = 0; i < blockSize; i++)
-    {
-        switch (diskAllocationMethod)
-        {
-            case Contiguous:
-                filesInformation.push_back(new ContiguousFileInformation());
-                break;
-
-            case Linked:
-                filesInformation.push_back(new LinkedFileInformation());
-                break;
-
-            case Indexed:
-                filesInformation.push_back(new IndexedFileInformation());
-                break;
-
-            case Custom:
-                filesInformation.push_back(new CustomFileInformation());
-                break;
-        }
-    }
 }
 
 DirectoryBlock::~DirectoryBlock()
@@ -36,6 +11,38 @@ DirectoryBlock::~DirectoryBlock()
         delete fileInformation;
 
     filesInformation.clear();
+}
+
+vector<AbstractFileInformation*> &DirectoryBlock::getFilesInformation()
+{
+    return filesInformation;
+}
+
+const vector<AbstractFileInformation*> &DirectoryBlock::getFilesInformation() const
+{
+    return filesInformation;
+}
+
+bool DirectoryBlock::deleteFile(const int fileName)
+{
+    for (auto *fileInformation : filesInformation)
+    {
+        if (fileInformation->getFileName() != fileName)
+            continue;
+
+        delete fileInformation;
+        return true;
+    }
+
+    return false;
+}
+
+string DirectoryBlock::toString(const int index)
+{
+    if (index >= static_cast<const int>(filesInformation.size()))
+        return "";
+
+    return filesInformation[index]->toString();
 }
 
 AbstractFileInformation *DirectoryBlock::operator[](const int index)

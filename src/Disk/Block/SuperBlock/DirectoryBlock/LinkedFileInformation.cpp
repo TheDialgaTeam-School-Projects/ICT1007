@@ -24,13 +24,6 @@ void LinkedFileInformation::setEndBlockIndex(const int endBlockIndex)
     this->endBlockIndex = endBlockIndex;
 }
 
-void LinkedFileInformation::reset()
-{
-    fileName = -1;
-    startBlockIndex = -1;
-    endBlockIndex = -1;
-}
-
 string LinkedFileInformation::toString() const
 {
     if (fileName == -1 || startBlockIndex == -1 || endBlockIndex == -1)

@@ -18,7 +18,5 @@ public:
     int getEndBlockIndex() const;
     void setEndBlockIndex(int endBlockIndex);
 
-    void reset() override;
-
     string toString() const override;
 };

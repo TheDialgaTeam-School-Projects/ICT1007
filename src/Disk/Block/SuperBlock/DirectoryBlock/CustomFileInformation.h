@@ -18,7 +18,5 @@ public:
     int getLength() const;
     void setLength(int length);
 
-    void reset() override;
-
     string toString() const override;
 };

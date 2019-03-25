@@ -12,6 +12,8 @@ class ContiguousDiskBlock final : public AbstractDiskBlock
 public:
     ContiguousDiskBlock(int blockIndex, int blockSize);
 
+    string toString(int index) override;
+
     int &operator[](int index);
 };
 

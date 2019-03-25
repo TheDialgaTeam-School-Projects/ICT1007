@@ -6,12 +6,63 @@
 #include "../Config.h"
 #include "Block/ContiguousDiskBlock.h"
 #include "Block/SuperDiskBlock.h"
+#include "Block/SuperBlock/DirectoryBlock/ContiguousFileInformation.h"
 
 using std::cout;
 
 using std::endl;
 using std::left;
 using std::setw;
+
+void Disk::deleteContiguousFile(ContiguousFileInformation *fileInformation, vector<int> &blocksFreed)
+{
+    auto currentBlockIndex = fileInformation->getStartBlockIndex();
+    auto totalFileLength = fileInformation->getLength();
+
+    while (totalFileLength > 0)
+    {
+        auto *diskBlock = diskBlocks[currentBlockIndex];
+        delete diskBlock;
+        diskBlocks.erase(currentBlockIndex);
+
+        getVolumeControlBlock().updateFreeDataBlock(currentBlockIndex, true);
+
+        blocksFreed.push_back(currentBlockIndex);
+
+        currentBlockIndex++;
+        totalFileLength -= diskBlock->getBlockSize();
+    }
+}
+
+void Disk::deleteLinkedFile(LinkedFileInformation *fileInformation, vector<int> &blocksFreed)
+{
+    // TODO: Implement delete linked file.
+}
+
+void Disk::deleteIndexedFile(IndexedFileInformation *fileInformation, vector<int> &blocksFreed)
+{
+    // TODO: Implement delete indexed file.
+}
+
+void Disk::deleteCustomFile(CustomFileInformation *fileInformation, vector<int> &blocksFreed)
+{
+    auto currentBlockIndex = fileInformation->getStartBlockIndex();
+    auto totalFileLength = fileInformation->getLength();
+
+    while (totalFileLength > 0)
+    {
+        auto *diskBlock = diskBlocks[currentBlockIndex];
+        delete diskBlock;
+        diskBlocks.erase(currentBlockIndex);
+
+        getVolumeControlBlock().updateFreeDataBlock(currentBlockIndex, true);
+
+        blocksFreed.push_back(currentBlockIndex);
+
+        currentBlockIndex++;
+        totalFileLength -= diskBlock->getBlockSize();
+    }
+}
 
 void Disk::printDiskMapHeader()
 {
@@ -36,8 +87,10 @@ void Disk::printDiskMapValues(const int index, const int block, const string &va
 
 string Disk::getDiskEntriesValue(const int index)
 {
-    if (index == 0)
-        return "VOLUME CONTROL BLOCK";
+    const auto blockIndex = index / getVolumeControlBlock().getEntriesPerDiskBlock();
+
+    if (diskBlocks.count(blockIndex) > 0)
+        return diskBlocks[blockIndex]->toString(index - blockIndex * getVolumeControlBlock().getEntriesPerDiskBlock());
 
     return "";
 }
@@ -62,48 +115,72 @@ DirectoryBlock &Disk::getDirectoryBlock()
     return reinterpret_cast<SuperDiskBlock*>(diskBlocks[0])->getDirectoryBlock();
 }
 
+void Disk::addFile(const int fileName, vector<int> &data)
+{
+}
+
+void Disk::readFile(const int data)
+{
+}
+
+void Disk::deleteFile(const int fileName)
+{
+    auto &directoryBlock = getDirectoryBlock();
+
+    for (auto i = 0; i < directoryBlock.getBlockSize(); ++i)
+    {
+        if (directoryBlock[i]->getFileName() != fileName)
+            continue;
+
+        vector<int> blocksFreed;
+
+        switch (diskAllocationMethod)
+        {
+            case Contiguous:
+                deleteContiguousFile(reinterpret_cast<ContiguousFileInformation*>(directoryBlock[i]), blocksFreed);
+                break;
+
+            case Linked:
+                deleteLinkedFile(reinterpret_cast<LinkedFileInformation*>(directoryBlock[i]), blocksFreed);
+                break;
+
+            case Indexed:
+                deleteIndexedFile(reinterpret_cast<IndexedFileInformation*>(directoryBlock[i]), blocksFreed);
+                break;
+
+            case Custom:
+                deleteCustomFile(reinterpret_cast<CustomFileInformation*>(directoryBlock[i]), blocksFreed);
+                break;
+        }
+
+        directoryBlock.deleteFile(fileName);
+
+        cout << "Deleted file " << fileName << " and freed ";
+
+        for (auto j = 0; j < static_cast<int>(blocksFreed.size()); j++)
+        {
+            if (j == 0)
+                cout << "B" << blocksFreed[j];
+            else
+                cout << ", B" << blocksFreed[j];
+        }
+
+        cout << endl;
+
+        return;
+    }
+
+    cout << "Requested file " << fileName << " could not be found." << endl;
+}
+
 void Disk::reformatDisk(const int totalDiskEntries, const int entriesPerDiskBlock, const DiskAllocationMethod diskAllocationMethod)
 {
     dispose();
 
     this->diskAllocationMethod = diskAllocationMethod;
 
-    // Step 1: Generate Super Block.
-    // Super Block contains Volume Control Block and Directory Block.
-    // Directory Block contains file information.
     const auto superBlockData = new SuperDiskBlock(totalDiskEntries, entriesPerDiskBlock, diskAllocationMethod);
     diskBlocks[0] = superBlockData;
-
-    auto volumeControlBlock = superBlockData->getVolumeControlBlock();
-
-    // Step 2: Generate Data Block based on allocation methods.
-    for (auto i = 0; i < volumeControlBlock.getTotalDiskBlock() - 1; i++)
-    {
-        AbstractDiskBlock *dataBlock = nullptr;
-        const auto size = volumeControlBlock.getEntriesPerDiskBlock();
-
-        switch (diskAllocationMethod)
-        {
-            case Contiguous:
-                dataBlock = new ContiguousDiskBlock(i + 1, size);
-                break;
-
-            case Linked:
-                dataBlock = new ContiguousDiskBlock(i + 1, size);
-                break;
-
-            case Indexed:
-                dataBlock = new ContiguousDiskBlock(i + 1, size);
-                break;
-
-            case Custom:
-                dataBlock = new ContiguousDiskBlock(i + 1, size);
-                break;
-        }
-
-        volumeControlBlock.updateFreeDataBlock(i + 1, true);
-        diskBlocks[i + 1] = dataBlock;
-    }
 
     cout << "Disk has successfully formatted. You may do disk operation now." << endl;
 }

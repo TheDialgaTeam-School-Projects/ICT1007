@@ -14,12 +14,6 @@ void IndexedFileInformation::setIndexBlockIndex(const int indexBlockIndex)
     this->indexBlockIndex = indexBlockIndex;
 }
 
-void IndexedFileInformation::reset()
-{
-    fileName = -1;
-    indexBlockIndex = -1;
-}
-
 string IndexedFileInformation::toString() const
 {
     if (fileName == -1 || indexBlockIndex == -1)

@@ -14,7 +14,5 @@ public:
     int getIndexBlockIndex() const;
     void setIndexBlockIndex(int indexBlockIndex);
 
-    void reset() override;
-
     string toString() const override;
 };

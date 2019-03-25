@@ -27,3 +27,11 @@ const DirectoryBlock &SuperDiskBlock::getDirectoryBlock() const
 {
     return directoryBlock;
 }
+
+string SuperDiskBlock::toString(const int index)
+{
+    if (index == 0)
+        return "VOLUME CONTROL BLOCK";
+
+    return directoryBlock.toString(index - 1);
+}

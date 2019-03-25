@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+
+using std::string;
 
 class AbstractDiskBlock
 {
@@ -12,6 +15,8 @@ public:
 
     int getBlockIndex() const;
     int getBlockSize() const;
+
+    virtual string toString(int index) = 0;
 
     AbstractDiskBlock(const AbstractDiskBlock &) = default;
     AbstractDiskBlock &operator=(const AbstractDiskBlock &) = default;

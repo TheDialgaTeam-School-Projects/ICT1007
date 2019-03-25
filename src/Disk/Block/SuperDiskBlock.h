@@ -16,6 +16,8 @@ public:
 
     DirectoryBlock &getDirectoryBlock();
     const DirectoryBlock &getDirectoryBlock() const;
+
+    string toString(int index) override;
 };
 
 using SuperBlockData = SuperDiskBlock;
