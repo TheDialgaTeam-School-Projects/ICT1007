@@ -173,6 +173,22 @@ void Disk::deleteFile(const int fileName)
     cout << "Requested file " << fileName << " could not be found." << endl;
 }
 
+bool Disk::deleteDiskBlock(const int blockIndex)
+{
+    for (auto &diskBlock : diskBlocks)
+    {
+        if (diskBlock.first != blockIndex)
+            continue;
+
+        delete diskBlock.second;
+        diskBlocks.erase(blockIndex);
+        getVolumeControlBlock().updateFreeDataBlock(blockIndex, true);
+        return true;
+    }
+
+    return false;
+}
+
 void Disk::reformatDisk(const int totalDiskEntries, const int entriesPerDiskBlock, const DiskAllocationMethod diskAllocationMethod)
 {
     dispose();
@@ -181,6 +197,8 @@ void Disk::reformatDisk(const int totalDiskEntries, const int entriesPerDiskBloc
 
     const auto superBlockData = new SuperDiskBlock(totalDiskEntries, entriesPerDiskBlock, diskAllocationMethod);
     diskBlocks[0] = superBlockData;
+
+    getVolumeControlBlock().updateFreeDataBlock(0, false);
 
     cout << "Disk has successfully formatted. You may do disk operation now." << endl;
 }

@@ -19,7 +19,7 @@ public:
     const vector<AbstractFileInformation*> &getFilesInformation() const;
 
     template<class TAbstractFileInformation>
-    TAbstractFileInformation *createFile();
+    TAbstractFileInformation *addFile();
 
     bool deleteFile(int fileName);
 
@@ -34,7 +34,7 @@ public:
 };
 
 template <class TAbstractFileInformation>
-TAbstractFileInformation *DirectoryBlock::createFile()
+TAbstractFileInformation *DirectoryBlock::addFile()
 {
     static_assert(std::is_base_of<AbstractFileInformation, TAbstractFileInformation>::value, "TAbstractFileInformation requires a class that extends AbstractFileInformation.");
 

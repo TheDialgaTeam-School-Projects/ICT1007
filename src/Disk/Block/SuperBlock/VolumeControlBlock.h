@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+using std::vector;
+
 class VolumeControlBlock
 {
     int totalDiskEntries;
@@ -15,6 +17,8 @@ public:
     int getTotalDiskEntries() const;
     int getEntriesPerDiskBlock() const;
     int getTotalDiskBlock() const;
+
+    vector<int> getFreeDataBlocks(int entriesSize, int *speed);
 
     void updateFreeDataBlock(int blockIndex, bool free);
 };

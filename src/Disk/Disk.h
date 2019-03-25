@@ -39,6 +39,10 @@ public:
     void readFile(int data);
     void deleteFile(int fileName);
 
+    template <class TAbstractDiskBlock>
+    TAbstractDiskBlock *addDiskBlock(int blockIndex);
+    bool deleteDiskBlock(int blockIndex);
+
     void reformatDisk(int totalDiskEntries, int entriesPerDiskBlock, DiskAllocationMethod diskAllocationMethod);
     void printDiskMap();
     void dispose();
@@ -48,3 +52,22 @@ public:
     Disk(Disk &&) = default;
     Disk &operator=(Disk &&) = default;
 };
+
+template <class TAbstractDiskBlock>
+TAbstractDiskBlock *Disk::addDiskBlock(const int blockIndex)
+{
+    static_assert(std::is_base_of<AbstractDiskBlock, TAbstractDiskBlock>::value, "TAbstractDiskBlock requires a class that extends AbstractDiskBlock.");
+
+    if (diskBlocks.size() + 1 > getVolumeControlBlock().getTotalDiskBlock())
+        return nullptr;
+
+    if (diskBlocks.count(blockIndex) > 0)
+        return nullptr;
+
+    AbstractDiskBlock *diskBlock = new TAbstractDiskBlock(blockIndex, getVolumeControlBlock().getEntriesPerDiskBlock());
+    diskBlocks[blockIndex] = diskBlock;
+
+    getVolumeControlBlock().updateFreeDataBlock(blockIndex, false);
+
+    return reinterpret_cast<TAbstractDiskBlock*>(diskBlock);
+}

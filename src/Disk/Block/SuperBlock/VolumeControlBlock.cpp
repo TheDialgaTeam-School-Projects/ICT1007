@@ -5,7 +5,7 @@ VolumeControlBlock::VolumeControlBlock(const int totalDiskEntries, const int ent
     this->entriesPerDiskBlock = entriesPerDiskBlock;
     totalDiskBlock = totalDiskEntries / entriesPerDiskBlock;
     this->totalDiskEntries = totalDiskBlock * entriesPerDiskBlock;
-    freeDataBlocks.assign(totalDiskBlock, false);
+    freeDataBlocks.assign(totalDiskBlock, true);
 }
 
 int VolumeControlBlock::getTotalDiskEntries() const
@@ -21,6 +21,33 @@ int VolumeControlBlock::getEntriesPerDiskBlock() const
 int VolumeControlBlock::getTotalDiskBlock() const
 {
     return totalDiskBlock;
+}
+
+vector<int> VolumeControlBlock::getFreeDataBlocks(const int entriesSize, int *speed)
+{
+    vector<int> result;
+    auto currentSize = 0;
+
+    for (auto i = 0; i < totalDiskBlock; i++)
+    {
+        if (freeDataBlocks[i])
+        {
+            result.push_back(i);
+            currentSize += entriesPerDiskBlock;
+        }
+        else
+        {
+            result.clear();
+            currentSize = 0;
+        }
+
+        (*speed)++;
+
+        if (currentSize >= entriesSize)
+            return result;
+    }
+
+    return result;
 }
 
 void VolumeControlBlock::updateFreeDataBlock(const int blockIndex, const bool free)
