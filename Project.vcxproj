@@ -30,6 +30,7 @@
     <ClCompile Include="src\Disk\Block\SuperBlock\VolumeControlBlock.cpp" />
     <ClCompile Include="src\Disk\Block\SuperDiskBlock.cpp" />
     <ClCompile Include="src\Disk\Disk.cpp" />
+    <ClCompile Include="src\Disk\tempOpen.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +47,7 @@
     <ClInclude Include="src\Disk\Block\SuperDiskBlock.h" />
     <ClInclude Include="src\Disk\Disk.h" />
     <ClInclude Include="src\Disk\DiskAllocationMethod.h" />
+    <ClInclude Include="src\Disk\tempOpen.h" />
     <ClInclude Include="src\Main.h" />
   </ItemGroup>
   <ItemGroup>

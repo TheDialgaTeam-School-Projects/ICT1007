@@ -75,6 +75,9 @@
     <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\LinkedFileInformation.cpp">
       <Filter>Source Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
     </ClCompile>
+    <ClCompile Include="src\Disk\tempOpen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Config.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\AbstractFileInformation.h">
       <Filter>Header Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\tempOpen.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

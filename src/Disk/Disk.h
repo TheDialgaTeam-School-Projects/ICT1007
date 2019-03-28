@@ -58,7 +58,7 @@ TAbstractDiskBlock *Disk::addDiskBlock(const int blockIndex)
 {
     static_assert(std::is_base_of<AbstractDiskBlock, TAbstractDiskBlock>::value, "TAbstractDiskBlock requires a class that extends AbstractDiskBlock.");
 
-    if (diskBlocks.size() + 1 > getVolumeControlBlock().getTotalDiskBlock())
+    if (static_cast<int>(diskBlocks.size()) + 1 > getVolumeControlBlock().getTotalDiskBlock())
         return nullptr;
 
     if (diskBlocks.count(blockIndex) > 0)

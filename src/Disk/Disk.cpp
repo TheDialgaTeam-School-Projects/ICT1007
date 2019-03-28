@@ -7,6 +7,8 @@
 #include "Block/ContiguousDiskBlock.h"
 #include "Block/SuperDiskBlock.h"
 #include "Block/SuperBlock/DirectoryBlock/ContiguousFileInformation.h"
+#include "tempOpen.h"
+#include <sstream>
 
 using std::cout;
 
@@ -30,7 +32,7 @@ void Disk::deleteContiguousFile(ContiguousFileInformation *fileInformation, vect
         blocksFreed.push_back(currentBlockIndex);
 
         currentBlockIndex++;
-        totalFileLength -= diskBlock->getBlockSize();
+        totalFileLength -= getVolumeControlBlock().getEntriesPerDiskBlock();
     }
 }
 
@@ -117,10 +119,60 @@ DirectoryBlock &Disk::getDirectoryBlock()
 
 void Disk::addFile(const int fileName, vector<int> &data)
 {
+	int speed = 0;
+	vector<int> freeBlockIndex = getVolumeControlBlock().getFreeDataBlocks(data.size() - 1, &speed);
+
+	for (int i = 0; i < freeBlockIndex.size(); i++) {
+		ContiguousDiskBlock *block = addDiskBlock<ContiguousDiskBlock>(freeBlockIndex[i]);
+
+		for (int j = 0; j < block->getBlockSize(); j++) {
+			if (j + 1 + i * block->getBlockSize() < data.size())
+				(*block)[j] = data[j + 1 + i * block->getBlockSize()];
+		}
+	}
+
+	ContiguousFileInformation *file = getDirectoryBlock().addFile<ContiguousFileInformation>();
+	file->setFileName(fileName);
+	file->setStartBlockIndex(freeBlockIndex[0]);
+	file->setLength(data.size() - 1);
 }
 
 void Disk::readFile(const int data)
 {
+	vector<string> strOperration;
+	vector< vector<int>> theUltimateVector;
+	string word;
+	
+	vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
+	for (auto x : fileInfo) {
+
+		strOperration.push_back(x->toString()) ;
+	}
+	
+	for (int i=0; i < strOperration.size(); i++) {
+		vector<int> myNumbers;
+		for (stringstream sst(strOperration[i]); getline(sst, word, ',');) {
+			// add all the column data 
+			// of a row to a vector 
+			
+			myNumbers.push_back(stoi(word));
+			//cout << word;
+		}
+		theUltimateVector.push_back(myNumbers);
+	}
+
+	for (int i = 0; i < theUltimateVector.size(); i++) {
+		for (int j = 0; j < 1; j++) {
+			int max = theUltimateVector[i][j] + theUltimateVector[i][j + 2];
+			if (data <= max && data >= theUltimateVector[i][j] ) {
+				cout << "read file " << theUltimateVector[i][j] << "(" << data << ") from block" << theUltimateVector[i][j + 1] << endl;
+				break;
+			}
+
+		}
+		
+	}
+
 }
 
 void Disk::deleteFile(const int fileName)

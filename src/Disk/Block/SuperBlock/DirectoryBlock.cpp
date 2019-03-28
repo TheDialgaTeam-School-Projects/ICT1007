@@ -25,12 +25,16 @@ const vector<AbstractFileInformation*> &DirectoryBlock::getFilesInformation() co
 
 bool DirectoryBlock::deleteFile(const int fileName)
 {
-    for (auto *fileInformation : filesInformation)
+    for (auto i = 0; i < filesInformation.size(); i++)
     {
+        auto *fileInformation = filesInformation[i];
+
         if (fileInformation->getFileName() != fileName)
             continue;
 
         delete fileInformation;
+        filesInformation.erase(filesInformation.begin() + i);
+
         return true;
     }
 

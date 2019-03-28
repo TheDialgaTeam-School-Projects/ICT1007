@@ -6,6 +6,7 @@
 #include "Config.h"
 #include "Disk/Disk.h"
 #include "Disk/DiskAllocationMethod.h"
+#include "Disk/tempOpen.h"
 
 using std::cout;
 using std::cin;
@@ -17,6 +18,7 @@ using std::exception;
 
 int main(int argc, char *argv[])
 {
+
     try
     {
         auto entriesPerDiskBlock = 0;
@@ -29,7 +31,31 @@ int main(int argc, char *argv[])
 
         cout << "We are now formatting the disk based on the above configuration!" << endl;
         Disk disk(DEFAULT_TOTAL_ENTRIES, entriesPerDiskBlock, allocationMethod);
-        disk.printDiskMap();
+        
+		tempOpen Dataset;
+		Dataset.initiateFiles();
+
+		vector<map<string, vector<int>>> dataSet = Dataset.getData();
+
+		for (auto i = 0; i < dataSet.size() - 1; i++) {
+			for (map<string, vector<int> >::iterator ii = dataSet[i].begin(); ii != dataSet[i].end(); ++ii) {
+
+				if ((*ii).first == "add") {
+					disk.addFile((*ii).second[0], (*ii).second);
+				}
+				else if ((*ii).first == "delete") {
+					disk.deleteFile((*ii).second[0]);
+				}
+				else if ((*ii).first == "read") {
+					disk.readFile((*ii).second[0]);
+				}
+
+			}
+
+		}
+        disk.deleteFile(100);
+		disk.printDiskMap();
+
     }
     catch (exception &exception)
     {
