@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="src\Disk\Block\AbstractDiskBlock.cpp" />
     <ClCompile Include="src\Disk\Block\ContiguousDiskBlock.cpp" />
+    <ClCompile Include="src\Disk\Block\IndexedDiskBlock.cpp" />
+    <ClCompile Include="src\Disk\Block\LinkedDiskBlock.cpp" />
     <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock.cpp" />
     <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\AbstractFileInformation.cpp" />
     <ClCompile Include="src\Disk\Block\SuperBlock\DirectoryBlock\ContiguousFileInformation.cpp" />
@@ -30,6 +32,8 @@
     <ClCompile Include="src\Disk\Block\SuperBlock\VolumeControlBlock.cpp" />
     <ClCompile Include="src\Disk\Block\SuperDiskBlock.cpp" />
     <ClCompile Include="src\Disk\Disk.cpp" />
+    <ClCompile Include="src\Disk\DiskAdd.cpp" />
+    <ClCompile Include="src\Disk\DiskDelete.cpp" />
     <ClCompile Include="src\Disk\tempOpen.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
@@ -37,6 +41,8 @@
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\Disk\Block\AbstractDiskBlock.h" />
     <ClInclude Include="src\Disk\Block\ContiguousDiskBlock.h" />
+    <ClInclude Include="src\Disk\Block\IndexedDiskBlock.h" />
+    <ClInclude Include="src\Disk\Block\LinkedDiskBlock.h" />
     <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock.h" />
     <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\AbstractFileInformation.h" />
     <ClInclude Include="src\Disk\Block\SuperBlock\DirectoryBlock\ContiguousFileInformation.h" />

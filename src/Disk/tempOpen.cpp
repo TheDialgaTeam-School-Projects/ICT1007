@@ -1,92 +1,87 @@
 #include "tempOpen.h"
+
 #include <fstream>
-#include <vector>
-#include <sstream>
 #include <iostream>
 #include <map>
+#include <sstream>
+#include <vector>
 
-using std::vector;  //specify stuff
-using std::string;
 using std::cout;
+
 using std::endl;
-using std::map;
 using std::stoi;
-using namespace std;
 
+using std::map;
+using std::string;
+using std::vector;
 
-vector <string> tempOpen::openFile() {
-	fstream fin;
-	fin.open("SampleCSV.csv", ios::in);
-	// Read the Data from the file 
-// as String Vector 
-	vector<string> row;
-	vector<string> myOperations;
-	string line, word, temp;
-	while (fin >> temp) {
-		//cout << temp;
-		
-		// read an entire row and 
-		// store it in a string variable 'line' 
-		getline(fin, line);
-		//cout << line << endl;
-		// used for breaking words 
-		stringstream s(line);
+vector<string> tempOpen::openFile()
+{
+    fstream fin;
+    fin.open("SampleCSV.csv", ios::in);
+    // Read the Data from the file 
+    // as String Vector 
+    vector<string> row;
+    vector<string> myOperations;
+    string line, word, temp;
+    while (fin >> temp)
+    {
+        // read an entire row and 
+        // store it in a string variable 'line' 
+        getline(fin, line);
 
-		// read every column data of a row and 
-		// store it in a string variable, 'word' 
-		while (getline(s, word, ',')) {
-			// add all the column data 
-			// of a row to a vector 
-			row.push_back(word);
-			//cout << word;
-		}
-		string currentOp = temp + line;
-		myOperations.push_back(currentOp);
-	}
-	cout << "File is now read!" << endl;
-	return myOperations;
+        // used for breaking words 
+        stringstream s(line);
+
+        // read every column data of a row and 
+        // store it in a string variable, 'word' 
+        while (getline(s, word, ','))
+        {
+            // add all the column data 
+            // of a row to a vector 
+            row.push_back(word);
+        }
+        string currentOp = temp + line;
+        myOperations.push_back(currentOp);
+    }
+    cout << "File is now read!" << endl;
+    return myOperations;
 }
 
-void tempOpen::initiateFiles() {
-	tempOpen  o;
-	vector<string>arr = o.openFile();  //contains add,100,101,102,103,104
-									   //         del,100,102 etc
+void tempOpen::initiateFiles()
+{
+    tempOpen o;
+    vector<string> arr = o.openFile(); //contains add,100,101,102,103,104
+    //         del,100,102 etc
 
+    vector<map<string, vector<int>>> convertedData;
 
-	vector<map<string, vector<int>>> convertedData;
+    for (int i = 0; i < arr.size(); i++)
+    {
+        string tmp;
+        stringstream ss(arr[i]);
+        vector<string> words;
+        map<std::string, vector<int>> csv;
+        vector<int> values; //contains 100,101,102,103,104 for example
 
+        while (getline(ss, tmp, ','))
+        {
+            words.push_back(tmp);
+        }
 
-	for (int i = 0; i < arr.size(); i++) {
-		string tmp;
-		stringstream ss(arr[i]);
-		vector<string> words;
-		map<std::string, vector<int>> csv;
-		vector<int> values;	//contains 100,101,102,103,104 for example
+        for (auto x = 0; x < words.size() - 1; x++)
+        {
+            values.push_back(stoi(words[x + 1]));
+        }
 
-		while (getline(ss, tmp, ',')) {
-			words.push_back(tmp);
-		}
-		cout << endl;
+        csv.insert(std::pair<string, vector<int>>(words[0], values));
+        convertedData.push_back(csv);
+    }
 
-		for (auto x = 0; x < words.size() - 1; x++) {
-			values.push_back(stoi(words[x + 1]));
-		}
-
-		csv.insert(std::pair<string, vector<int>>(words[0], values));
-		convertedData.push_back(csv);
-
-
-	}
-
-	this->datas = convertedData;
-	
-	//for (const auto& p : datas[0]) {
-	//	std::cout << p.first << std::endl; // "Karl", "George"
-	//	// p.second is Employee object.
-	//}
-
+    this->datas = convertedData;
 }
 
-vector<map<string, vector<int>>> tempOpen::getData() {
-	return datas;
+vector<map<string, vector<int>>> tempOpen::getData()
+{
+    return datas;
 }

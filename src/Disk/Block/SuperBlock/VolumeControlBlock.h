@@ -19,6 +19,7 @@ public:
     int getTotalDiskBlock() const;
 
     vector<int> getFreeDataBlocks(int entriesSize, int *speed);
+    vector<int> getFreeDataBlocksForLinked(int entriesSize, int *speed);
 
     void updateFreeDataBlock(int blockIndex, bool free);
 };

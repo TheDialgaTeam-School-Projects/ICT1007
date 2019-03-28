@@ -18,7 +18,7 @@ public:
     vector<AbstractFileInformation*> &getFilesInformation();
     const vector<AbstractFileInformation*> &getFilesInformation() const;
 
-    template<class TAbstractFileInformation>
+    template <class TAbstractFileInformation>
     TAbstractFileInformation *addFile();
 
     bool deleteFile(int fileName);

@@ -18,6 +18,16 @@ class Disk
     DiskAllocationMethod diskAllocationMethod = Contiguous;
     map<int, AbstractDiskBlock*> diskBlocks;
 
+    void addContiguousFile(int fileName, vector<int> &data);
+    void addLinkedFile(int fileName, vector<int> &data);
+    void addIndexedFile(int fileName, vector<int> &data);
+    void addCustomFile(int fileName, vector<int> &data);
+
+    void readContiguousFile(int data);
+    void readLinkedFile(int data);
+    void readIndexedFile(int data);
+    //void readCustomFile(const int data);
+
     void deleteContiguousFile(ContiguousFileInformation *fileInformation, vector<int> &blocksFreed);
     void deleteLinkedFile(LinkedFileInformation *fileInformation, vector<int> &blocksFreed);
     void deleteIndexedFile(IndexedFileInformation *fileInformation, vector<int> &blocksFreed);
@@ -58,7 +68,7 @@ TAbstractDiskBlock *Disk::addDiskBlock(const int blockIndex)
 {
     static_assert(std::is_base_of<AbstractDiskBlock, TAbstractDiskBlock>::value, "TAbstractDiskBlock requires a class that extends AbstractDiskBlock.");
 
-    if (static_cast<int>(diskBlocks.size()) + 1 > getVolumeControlBlock().getTotalDiskBlock())
+    if (diskBlocks.size() + 1 > getVolumeControlBlock().getTotalDiskBlock())
         return nullptr;
 
     if (diskBlocks.count(blockIndex) > 0)

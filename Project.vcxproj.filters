@@ -78,6 +78,18 @@
     <ClCompile Include="src\Disk\tempOpen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Disk\Block\IndexedDiskBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\Block\LinkedDiskBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\DiskAdd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk\DiskDelete.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Config.h">
@@ -123,6 +135,12 @@
       <Filter>Header Files\Disk\Block\SuperBlock\DirectoryBlock</Filter>
     </ClInclude>
     <ClInclude Include="src\Disk\tempOpen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\IndexedDiskBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk\Block\LinkedDiskBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

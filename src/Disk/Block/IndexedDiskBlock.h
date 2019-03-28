@@ -5,16 +5,16 @@
 
 using std::vector;
 
-class ContiguousDiskBlock final : public AbstractDiskBlock
+class IndexedDiskBlock final : public AbstractDiskBlock
 {
     vector<int> data;
 
 public:
-    ContiguousDiskBlock(int blockIndex, int blockSize);
+    IndexedDiskBlock(int blockIndex, int blockSize);
 
     string toString(int index) override;
 
     int &operator[](int index);
 };
 
-using ContiguousBlockData = ContiguousDiskBlock;
+using IndexBlockData = IndexedDiskBlock;

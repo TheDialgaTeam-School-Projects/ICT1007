@@ -50,6 +50,28 @@ vector<int> VolumeControlBlock::getFreeDataBlocks(const int entriesSize, int *sp
     return result;
 }
 
+vector<int> VolumeControlBlock::getFreeDataBlocksForLinked(const int entriesSize, int *speed)
+{
+    vector<int> result;
+    auto currentSize = 0;
+
+    for (auto i = 0; i < totalDiskBlock; i++)
+    {
+        if (freeDataBlocks[i])
+        {
+            result.push_back(i);
+            currentSize += entriesPerDiskBlock - 1;
+        }
+
+        (*speed)++;
+
+        if (currentSize >= entriesSize)
+            return result;
+    }
+
+    return result;
+}
+
 void VolumeControlBlock::updateFreeDataBlock(const int blockIndex, const bool free)
 {
     freeDataBlocks[blockIndex] = free;
