@@ -16,7 +16,7 @@ string IndexedDiskBlock::toString(const int index)
         return "";
 
     stringstream stringStream;
-    stringStream << data[index];
+    stringStream << "B" << data[index];
 
     return stringStream.str();
 }

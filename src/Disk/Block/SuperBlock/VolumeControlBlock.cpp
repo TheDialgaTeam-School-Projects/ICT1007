@@ -1,5 +1,7 @@
 #include "VolumeControlBlock.h"
 
+// ReSharper disable CppUseAuto
+
 VolumeControlBlock::VolumeControlBlock(const int totalDiskEntries, const int entriesPerDiskBlock)
 {
     this->entriesPerDiskBlock = entriesPerDiskBlock;
@@ -23,44 +25,47 @@ int VolumeControlBlock::getTotalDiskBlock() const
     return totalDiskBlock;
 }
 
-vector<int> VolumeControlBlock::getFreeDataBlocks(const int entriesSize, int *speed)
+int VolumeControlBlock::getTotalFreeDataBlocks() const
 {
-    vector<int> result;
-    auto currentSize = 0;
+    int result = 0;
 
-    for (auto i = 0; i < totalDiskBlock; i++)
+    for (bool freeDataBlock : freeDataBlocks)
     {
-        if (freeDataBlocks[i])
-        {
-            result.push_back(i);
-            currentSize += entriesPerDiskBlock;
-        }
-        else
-        {
-            result.clear();
-            currentSize = 0;
-        }
+        if (!freeDataBlock)
+            continue;
 
-        (*speed)++;
-
-        if (currentSize >= entriesSize)
-            return result;
+        result++;
     }
 
     return result;
 }
 
-vector<int> VolumeControlBlock::getFreeDataBlocksForLinked(const int entriesSize, int *speed)
+vector<int> VolumeControlBlock::getFreeDataBlocks(const int entriesSize, const DiskAllocationMethod diskAllocationMethod, int *speed)
 {
     vector<int> result;
-    auto currentSize = 0;
+    int currentSize = 0;
+
+    if (diskAllocationMethod == Indexed)
+        currentSize -= entriesPerDiskBlock;
 
     for (auto i = 0; i < totalDiskBlock; i++)
     {
         if (freeDataBlocks[i])
         {
             result.push_back(i);
-            currentSize += entriesPerDiskBlock - 1;
+
+            if (diskAllocationMethod == Linked)
+                currentSize += entriesPerDiskBlock - 1;
+            else
+                currentSize += entriesPerDiskBlock;
+        }
+        else
+        {
+            if (diskAllocationMethod == Contiguous || diskAllocationMethod == Custom)
+            {
+                result.clear();
+                currentSize = 0;
+            }
         }
 
         (*speed)++;
@@ -68,6 +73,9 @@ vector<int> VolumeControlBlock::getFreeDataBlocksForLinked(const int entriesSize
         if (currentSize >= entriesSize)
             return result;
     }
+
+    if (currentSize < entriesSize)
+        result.clear();
 
     return result;
 }

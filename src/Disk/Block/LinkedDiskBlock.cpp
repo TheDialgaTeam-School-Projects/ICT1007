@@ -18,6 +18,10 @@ string LinkedDiskBlock::toString(const int index)
         return "";
 
     stringstream stringStream;
+
+    if (index + 1 == blockSize)
+        stringStream << "B";
+
     stringStream << data[index];
 
     return stringStream.str();

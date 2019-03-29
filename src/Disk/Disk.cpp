@@ -6,22 +6,28 @@
 
 #include "../Config.h"
 #include "Block/ContiguousDiskBlock.h"
-#include "Block/IndexedDiskBlock.h"
-#include "Block/LinkedDiskBlock.h"
 #include "Block/SuperDiskBlock.h"
 #include "Block/SuperBlock/DirectoryBlock/ContiguousFileInformation.h"
-#include "tempOpen.h"
+#include <algorithm>
 
 using std::cout;
 
 using std::endl;
+using std::fixed;
 using std::left;
+using std::setprecision;
 using std::setw;
 
+using std::pair;
+
+// ReSharper disable CppUseAuto
 
 void Disk::printDiskMapHeader()
 {
     cout
+        << "=======================================================================================================================" << endl
+        << "DISK MAP (For optimal reading, please set your console buffer width to at least 120 in length." << endl
+        << "=======================================================================================================================" << endl
         << "Index" << setw(2) << ' ' << "Block" << setw(2) << ' ' << "Block Data" << setw(10) << ' '
         << setw((CONSOLE_WIDTH - 34 * 3) / 2) << ' '
         << "Index" << setw(2) << ' ' << "Block" << setw(2) << ' ' << "Block Data" << setw(10) << ' '
@@ -62,12 +68,12 @@ Disk::~Disk()
 
 VolumeControlBlock &Disk::getVolumeControlBlock()
 {
-    return reinterpret_cast<SuperDiskBlock*>(diskBlocks[0])->getVolumeControlBlock();
+    return getDiskBlock<SuperDiskBlock>(0)->getVolumeControlBlock();
 }
 
 DirectoryBlock &Disk::getDirectoryBlock()
 {
-    return reinterpret_cast<SuperDiskBlock*>(diskBlocks[0])->getDirectoryBlock();
+    return getDiskBlock<SuperDiskBlock>(0)->getDirectoryBlock();
 }
 
 void Disk::addFile(const int fileName, vector<int> &data)
@@ -108,149 +114,15 @@ void Disk::readFile(const int data)
             readIndexedFile(data);
             break;
 
-            //    
-            //case Custom:
-            //    readCustomFile(data);
-            //    break;
-    }
-}
-
-void Disk::readContiguousFile(const int data)
-{
-    vector<string> strOperration;
-    vector<vector<int>> theUltimateVector;
-    string word;
-
-    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-    vector<AbstractBlockData>::iterator i;
-
-    for (auto &x : fileInfo)
-    {
-        strOperration.push_back(x->toString());
-    }
-
-    for (int i = 0; i < strOperration.size(); i++)
-    {
-        vector<int> myNumbers;
-        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
-        {
-            myNumbers.push_back(stoi(word));
-        }
-        theUltimateVector.push_back(myNumbers);
-    }
-
-    for (int i = 0; i < theUltimateVector.size(); i++)
-    {
-        for (int j = 0; j < 1; j++)
-        {
-            int max = theUltimateVector[i][j] + theUltimateVector[i][j + 2];
-            if (data <= max && data >= theUltimateVector[i][j])
-            {
-                cout << "read file " << theUltimateVector[i][j] << "(" << data << ") from block" << theUltimateVector[i][j + 1] << endl;
-                break;
-            }
-        }
-    }
-}
-
-void Disk::readLinkedFile(const int data)
-{
-    vector<string> strOperration;
-    vector<vector<int>> theUltimateVector;
-    string word;
-
-    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-    for (auto x : fileInfo)
-    {
-        strOperration.push_back(x->toString());
-    }
-
-    for (int i = 0; i < strOperration.size(); i++)
-    {
-        vector<int> myNumbers;
-        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
-        {
-            myNumbers.push_back(stoi(word));
-        }
-        theUltimateVector.push_back(myNumbers);
-    }
-    int index;
-    for (int i = 0; i < theUltimateVector.size(); i++)
-    {
-        if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0)
-        {
-            index = theUltimateVector[i][1];
+        case Custom:
+            readCustomFile(data);
             break;
-        }
     }
-    do
-    {
-        LinkedDiskBlock *block = reinterpret_cast<LinkedDiskBlock*>(diskBlocks[index]);
-        for (int i = 0; i < getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
-        {
-            index = (*block)[getVolumeControlBlock().getEntriesPerDiskBlock() - 1];
-            if ((*block)[i] == data)
-            {
-                cout << "Read file " << to_string(data) << " from B" << to_string(index) << endl;
-                break;
-            }
-        }
-    } while (index != -1);
-}
-
-void Disk::readIndexedFile(const int data)
-{
-    vector<string> strOperration;
-    vector<vector<int>> theUltimateVector;
-    string word;
-
-    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-    for (auto x : fileInfo)
-    {
-        strOperration.push_back(x->toString());
-    }
-
-    for (int i = 0; i < strOperration.size(); i++)
-    {
-        vector<int> myNumbers;
-        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
-        {
-            myNumbers.push_back(stoi(word));
-        }
-        theUltimateVector.push_back(myNumbers);
-    }
-    int blockIndex;
-    for (int i = 0; i < theUltimateVector.size(); i++)
-    {
-        if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0)
-        {
-            blockIndex = theUltimateVector[i][1];
-        }
-    }
-    IndexedDiskBlock *block = reinterpret_cast<IndexedDiskBlock*>(diskBlocks[blockIndex]);
-    for (int i = 0; i != getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
-    {
-        if ((*block)[i] == -1)
-            break;
-
-        auto indexBlockIndex = (*block)[i];
-
-        ContiguousDiskBlock *block_c = reinterpret_cast<ContiguousDiskBlock*>(diskBlocks[indexBlockIndex]);
-
-        for (int i = 0; i != getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
-        {
-            if ((*block_c)[i] == data)
-            {
-                cout << "Read file " << to_string(data) << " from B" << to_string(indexBlockIndex) << endl;
-            }
-        }
-    }
-    // cout << "File to be read not found" << endl;
 }
 
 void Disk::deleteFile(const int fileName)
 {
-    auto &directoryBlock = getDirectoryBlock();
+    DirectoryBlock &directoryBlock = getDirectoryBlock();
 
     for (auto i = 0ull; i < directoryBlock.getFilesInformation().size(); i++)
     {
@@ -282,7 +154,7 @@ void Disk::deleteFile(const int fileName)
 
         cout << "Deleted file " << fileName << " and freed ";
 
-        for (auto j = 0; j < static_cast<int>(blocksFreed.size()); j++)
+        for (uint64_t j = 0; j < blocksFreed.size(); j++)
         {
             if (j == 0)
                 cout << "B" << blocksFreed[j];
@@ -290,28 +162,27 @@ void Disk::deleteFile(const int fileName)
                 cout << ", B" << blocksFreed[j];
         }
 
-        cout << endl;
+        cout << endl << endl;
 
         return;
     }
 
-    cout << "Requested file " << fileName << " could not be found." << endl;
+    cout << "Requested file " << fileName << " could not be found." << endl << endl;
 }
 
 bool Disk::deleteDiskBlock(const int blockIndex)
 {
-    for (auto &diskBlock : diskBlocks)
-    {
-        if (diskBlock.first != blockIndex)
-            continue;
+    // Block not found.
+    if (diskBlocks.count(blockIndex) == 0)
+        return false;
 
-        delete diskBlock.second;
-        diskBlocks.erase(blockIndex);
-        getVolumeControlBlock().updateFreeDataBlock(blockIndex, true);
-        return true;
-    }
+    // Block is found. Delete away.
+    delete diskBlocks[blockIndex];
+    diskBlocks.erase(blockIndex);
 
-    return false;
+    // Update the VCB to tell that this block is free to use.
+    getVolumeControlBlock().updateFreeDataBlock(blockIndex, true);
+    return true;
 }
 
 void Disk::reformatDisk(const int totalDiskEntries, const int entriesPerDiskBlock, const DiskAllocationMethod diskAllocationMethod)
@@ -320,22 +191,68 @@ void Disk::reformatDisk(const int totalDiskEntries, const int entriesPerDiskBloc
 
     this->diskAllocationMethod = diskAllocationMethod;
 
-    const auto superBlockData = new SuperDiskBlock(totalDiskEntries, entriesPerDiskBlock, diskAllocationMethod);
+    SuperDiskBlock *superBlockData = new SuperDiskBlock(totalDiskEntries, entriesPerDiskBlock, diskAllocationMethod);
     diskBlocks[0] = superBlockData;
 
     getVolumeControlBlock().updateFreeDataBlock(0, false);
 
-    cout << "Disk has successfully formatted. You may do disk operation now." << endl;
+    cout << "Disk has successfully formatted. You may do disk operation now." << endl << endl;
+}
+
+void Disk::defragDisk()
+{
+    // Defrag operation is only available in custom for safety reasons.
+    if (diskAllocationMethod != Custom)
+        return;
+
+    int currentFreeIndex = 0;
+
+    for (int defragProgress = 0; defragProgress < getVolumeControlBlock().getTotalDiskBlock(); defragProgress++)
+    {
+        if (diskBlocks.count(defragProgress) > 0)
+        {
+            // Block exist and in the correct sequence.
+            if (defragProgress == currentFreeIndex)
+            {
+                currentFreeIndex++;
+                continue;
+            }
+
+            // Block exist but it is not in the correct sequence, move to the correct sequence now.
+            ContiguousDiskBlock *block = getDiskBlock<ContiguousDiskBlock>(defragProgress);
+
+            for (uint64_t i = 0; i < getDirectoryBlock().getFilesInformation().size(); i++)
+            {
+                CustomFileInformation *fileInformation = reinterpret_cast<CustomFileInformation*>(getDirectoryBlock()[i]);
+
+                if (fileInformation->getStartBlockIndex() != defragProgress)
+                    continue;
+
+                fileInformation->setStartBlockIndex(currentFreeIndex);
+                break;
+            }
+
+            // Move to the free block.
+            diskBlocks[currentFreeIndex] = block;
+            getVolumeControlBlock().updateFreeDataBlock(currentFreeIndex, false);
+
+            // Remove the old block away.
+            diskBlocks.erase(defragProgress);
+            getVolumeControlBlock().updateFreeDataBlock(defragProgress, true);
+
+            currentFreeIndex++;
+        }
+    }
 }
 
 void Disk::printDiskMap()
 {
     printDiskMapHeader();
 
-    auto totalDiskEntries = getVolumeControlBlock().getTotalDiskEntries();
-    auto index = 0;
-    auto index2 = totalDiskEntries / 3 + (totalDiskEntries % 3 > 0 ? 1 : 0);
-    auto index3 = index2 * 2;
+    int totalDiskEntries = getVolumeControlBlock().getTotalDiskEntries();
+    int index = 0;
+    int index2 = totalDiskEntries / 3 + (totalDiskEntries % 3 > 0 ? 1 : 0);
+    int index3 = index2 * 2;
 
     while (totalDiskEntries >= 3)
     {
@@ -356,11 +273,31 @@ void Disk::printDiskMap()
         printDiskMapValues(index, index / getVolumeControlBlock().getEntriesPerDiskBlock(), getDiskEntriesValue(index), false);
         printDiskMapValues(index2, index2 / getVolumeControlBlock().getEntriesPerDiskBlock(), getDiskEntriesValue(index2), false);
     }
+
+    int diskSpaceLeft = getVolumeControlBlock().getTotalFreeDataBlocks();
+
+    const uint64_t directorySize = getVolumeControlBlock().getEntriesPerDiskBlock() - 1;
+
+    if (getDirectoryBlock().getFilesInformation().size() + 1 > directorySize)
+        diskSpaceLeft = 0;
+
+    const double diskSpacePercentage = static_cast<double>(diskSpaceLeft) / static_cast<double>(getVolumeControlBlock().getTotalDiskBlock()) * 100;
+    const int totalDiskBlockUsed = getVolumeControlBlock().getTotalDiskBlock() - getVolumeControlBlock().getTotalFreeDataBlocks();
+    
+    cout
+        << endl
+        << "=======================================================================================================================" << endl
+        << "Disk Information (Volume Control Block)" << endl
+        << "=======================================================================================================================" << endl
+        << "Total Files added: " << getDirectoryBlock().getFilesInformation().size() << endl
+        << "Total Size (Including internal fragmentation): " << totalDiskBlockUsed << " Blocks (" << totalDiskBlockUsed * getVolumeControlBlock().getEntriesPerDiskBlock() << " entries)" << endl
+        << "Disk Space Left: " << diskSpaceLeft << " / " << getVolumeControlBlock().getTotalDiskBlock() << " (" << fixed << setprecision(2) << diskSpacePercentage << "%)" << endl
+    ;
 }
 
 void Disk::dispose()
 {
-    for (auto &diskBlock : diskBlocks)
+    for (pair<const int, AbstractDiskBlock*> &diskBlock : diskBlocks)
         delete diskBlock.second;
 
     diskBlocks.clear();

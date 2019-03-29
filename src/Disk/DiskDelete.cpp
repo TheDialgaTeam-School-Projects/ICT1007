@@ -3,21 +3,22 @@
 #include "Block/LinkedDiskBlock.h"
 #include "Block/IndexedDiskBlock.h"
 
+// ReSharper disable CppUseAuto
+
 void Disk::deleteContiguousFile(ContiguousFileInformation *fileInformation, vector<int> &blocksFreed)
 {
-    auto currentBlockIndex = fileInformation->getStartBlockIndex();
-    auto totalFileLength = fileInformation->getLength();
+    int currentBlockIndex = fileInformation->getStartBlockIndex();
+    int totalFileLength = fileInformation->getLength();
 
     while (totalFileLength > 0)
     {
-        auto *diskBlock = diskBlocks[currentBlockIndex];
+        AbstractDiskBlock *diskBlock = diskBlocks[currentBlockIndex];
         totalFileLength -= diskBlock->getBlockSize();
 
         delete diskBlock;
         diskBlocks.erase(currentBlockIndex);
 
         getVolumeControlBlock().updateFreeDataBlock(currentBlockIndex, true);
-
         blocksFreed.push_back(currentBlockIndex);
 
         currentBlockIndex++;
@@ -45,12 +46,11 @@ void Disk::deleteLinkedFile(LinkedFileInformation *fileInformation, vector<int> 
         index = toDelete.back();
         toDelete.pop_back();
 
-        auto *diskBlock = diskBlocks[index];
+        AbstractDiskBlock *diskBlock = diskBlocks[index];
         delete diskBlock;
         diskBlocks.erase(index);
 
         getVolumeControlBlock().updateFreeDataBlock(index, true);
-
         blocksFreed.push_back(index);
     } while (toDelete.size() != 0);
 }
@@ -64,7 +64,7 @@ void Disk::deleteIndexedFile(IndexedFileInformation *fileInformation, vector<int
         if ((*block)[i] == -1)
             break;
 
-        auto *diskBlock = diskBlocks[(*block)[i]];
+        AbstractDiskBlock *diskBlock = diskBlocks[(*block)[i]];
         delete diskBlock;
         diskBlocks.erase((*block)[i]);
 
@@ -74,23 +74,23 @@ void Disk::deleteIndexedFile(IndexedFileInformation *fileInformation, vector<int
 
     delete block;
     diskBlocks.erase(fileInformation->getIndexBlockIndex());
+    getVolumeControlBlock().updateFreeDataBlock(fileInformation->getIndexBlockIndex(), true);
 }
 
 void Disk::deleteCustomFile(CustomFileInformation *fileInformation, vector<int> &blocksFreed)
 {
-    auto currentBlockIndex = fileInformation->getStartBlockIndex();
-    auto totalFileLength = fileInformation->getLength();
+    int currentBlockIndex = fileInformation->getStartBlockIndex();
+    int totalFileLength = fileInformation->getLength();
 
     while (totalFileLength > 0)
     {
-        auto *diskBlock = diskBlocks[currentBlockIndex];
+        AbstractDiskBlock *diskBlock = diskBlocks[currentBlockIndex];
         totalFileLength -= diskBlock->getBlockSize();
 
         delete diskBlock;
         diskBlocks.erase(currentBlockIndex);
 
         getVolumeControlBlock().updateFreeDataBlock(currentBlockIndex, true);
-
         blocksFreed.push_back(currentBlockIndex);
 
         currentBlockIndex++;

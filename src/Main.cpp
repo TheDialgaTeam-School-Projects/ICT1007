@@ -1,12 +1,13 @@
 #include "Main.h"
 
 #include <exception>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "Config.h"
 #include "Disk/Disk.h"
 #include "Disk/DiskAllocationMethod.h"
-#include "Disk/tempOpen.h"
 
 using std::cout;
 using std::cin;
@@ -15,6 +16,11 @@ using std::cerr;
 using std::endl;
 
 using std::exception;
+using std::fstream;
+using std::ios;
+using std::stringstream;
+
+// ReSharper disable CppUseAuto
 
 int main(int argc, char *argv[])
 {
@@ -31,27 +37,18 @@ int main(int argc, char *argv[])
         cout << "We are now formatting the disk based on the above configuration!" << endl;
         Disk disk(DEFAULT_TOTAL_ENTRIES, entriesPerDiskBlock, allocationMethod);
 
-        tempOpen dataset;
-        dataset.initiateFiles();
+        vector<map<string, vector<int>>> csvFileInstructions = getCsvFileInstructions("SampleCSV.csv");
 
-        vector<map<string, vector<int>>> dataSet = dataset.getData();
-
-        for (int i = 0; i < dataSet.size(); i++)
+        for (map<string, vector<int>> &instruction : csvFileInstructions)
         {
-            for (map<string, vector<int>>::iterator ii = dataSet[i].begin(); ii != dataSet[i].end(); ++ii)
+            for (std::pair<string, vector<int>> item : instruction)
             {
-                if ((*ii).first == "add")
-                {
-                    disk.addFile((*ii).second[0], (*ii).second);
-                }
-                else if ((*ii).first == "delete")
-                {
-                    disk.deleteFile((*ii).second[0]);
-                }
-                else if ((*ii).first == "read")
-                {
-                    disk.readFile((*ii).second[0]);
-                }
+                if (item.first == "add")
+                    disk.addFile(item.second[0], item.second);
+                else if (item.first == "delete")
+                    disk.deleteFile(item.second[0]);
+                else if (item.first == "read")
+                    disk.readFile(item.second[0]);
             }
         }
 
@@ -109,4 +106,46 @@ void askDiskAllocationMethod(int &diskAllocationIndex)
             cin.ignore(LLONG_MAX, '\n');
         }
     } while (diskAllocationIndex < 1 || diskAllocationIndex > 4);
+}
+
+vector<map<string, vector<int>>> getCsvFileInstructions(const string &fileName)
+{
+    fstream fin;
+    fin.open(fileName, ios::in);
+
+    vector<map<string, vector<int>>> result;
+
+    // Loop until end of file.
+    while (!fin.eof())
+    {
+        // Contains a line of instructions: add, 100, 101, 102, 103, 104
+        string currentLine;
+        getline(fin, currentLine);
+
+        stringstream ss(currentLine);
+        map<string, vector<int>> innerResult;
+
+        string instruction;
+        vector<int> data;
+
+        getline(ss, instruction, ',');
+
+        if (instruction.empty())
+            continue;
+
+        while (!ss.eof())
+        {
+            string tempData;
+            getline(ss, tempData, ',');
+
+            data.push_back(stoi(tempData));
+        }
+
+        innerResult[instruction] = data;
+        result.push_back(innerResult);
+    }
+
+    fin.close();
+
+    return result;
 }

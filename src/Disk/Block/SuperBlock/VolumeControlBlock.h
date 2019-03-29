@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "../../DiskAllocationMethod.h"
 
 using std::vector;
 
@@ -17,9 +18,9 @@ public:
     int getTotalDiskEntries() const;
     int getEntriesPerDiskBlock() const;
     int getTotalDiskBlock() const;
+    int getTotalFreeDataBlocks() const;
 
-    vector<int> getFreeDataBlocks(int entriesSize, int *speed);
-    vector<int> getFreeDataBlocksForLinked(int entriesSize, int *speed);
+    vector<int> getFreeDataBlocks(int entriesSize, DiskAllocationMethod diskAllocationMethod, int *speed);
 
     void updateFreeDataBlock(int blockIndex, bool free);
 };

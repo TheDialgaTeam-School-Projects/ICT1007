@@ -1,5 +1,7 @@
 #include "DirectoryBlock.h"
 
+// ReSharper disable CppUseAuto
+
 DirectoryBlock::DirectoryBlock(const int blockSize, const DiskAllocationMethod diskAllocationMethod):
     AbstractDiskBlock(0, blockSize)
 {
@@ -25,9 +27,9 @@ const vector<AbstractFileInformation*> &DirectoryBlock::getFilesInformation() co
 
 bool DirectoryBlock::deleteFile(const int fileName)
 {
-    for (auto i = 0; i < filesInformation.size(); i++)
+    for (uint64_t i = 0; i < filesInformation.size(); i++)
     {
-        auto *fileInformation = filesInformation[i];
+        AbstractFileInformation *fileInformation = filesInformation[i];
 
         if (fileInformation->getFileName() != fileName)
             continue;
