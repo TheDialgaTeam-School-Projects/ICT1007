@@ -19,7 +19,6 @@ void askEntriesPerDiskBlock(int &entriesPerDiskBlock);
  */
 void askDiskAllocationMethod(int &diskAllocationIndex);
 
-
 /**
  * \brief Get the CSV file instructions.
  * \param fileName File path of the csv file to read.

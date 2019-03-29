@@ -283,7 +283,7 @@ void Disk::printDiskMap()
 
     const double diskSpacePercentage = static_cast<double>(diskSpaceLeft) / static_cast<double>(getVolumeControlBlock().getTotalDiskBlock()) * 100;
     const int totalDiskBlockUsed = getVolumeControlBlock().getTotalDiskBlock() - getVolumeControlBlock().getTotalFreeDataBlocks();
-    
+
     cout
         << endl
         << "=======================================================================================================================" << endl
@@ -291,8 +291,7 @@ void Disk::printDiskMap()
         << "=======================================================================================================================" << endl
         << "Total Files added: " << getDirectoryBlock().getFilesInformation().size() << endl
         << "Total Size (Including internal fragmentation): " << totalDiskBlockUsed << " Blocks (" << totalDiskBlockUsed * getVolumeControlBlock().getEntriesPerDiskBlock() << " entries)" << endl
-        << "Disk Space Left: " << diskSpaceLeft << " / " << getVolumeControlBlock().getTotalDiskBlock() << " (" << fixed << setprecision(2) << diskSpacePercentage << "%)" << endl
-    ;
+        << "Disk Space Left: " << diskSpaceLeft << " / " << getVolumeControlBlock().getTotalDiskBlock() << " (" << fixed << setprecision(2) << diskSpacePercentage << "%)" << endl;
 }
 
 void Disk::dispose()

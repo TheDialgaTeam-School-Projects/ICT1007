@@ -77,30 +77,34 @@ void Disk::readContiguousFile(const int data)
 void Disk::readLinkedFile(const int data)
 {
     vector<string> strOperration;
-	vector< vector<int>> theUltimateVector;
-	string word;
+    vector<vector<int>> theUltimateVector;
+    string word;
 
-	vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-	for (auto x : fileInfo) {
+    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
+    for (auto x : fileInfo)
+    {
+        strOperration.push_back(x->toString());
+    }
 
-		strOperration.push_back(x->toString());
-	}
-
-	for (int i = 0; i < strOperration.size(); i++) {
-		vector<int> myNumbers;
-		for (stringstream sst(strOperration[i]); getline(sst, word, ',');) {
-			myNumbers.push_back(stoi(word));
-		}
-		theUltimateVector.push_back(myNumbers);
-	}
-	int index = -1;
-	int count = 0;
-	for (int i = 0; i < theUltimateVector.size(); i++) {
-		if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0) {
-			index = theUltimateVector[i][1];
-			break;
-		}
-	}
+    for (int i = 0; i < strOperration.size(); i++)
+    {
+        vector<int> myNumbers;
+        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
+        {
+            myNumbers.push_back(stoi(word));
+        }
+        theUltimateVector.push_back(myNumbers);
+    }
+    int index = -1;
+    int count = 0;
+    for (int i = 0; i < theUltimateVector.size(); i++)
+    {
+        if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0)
+        {
+            index = theUltimateVector[i][1];
+            break;
+        }
+    }
 
     if (index == -1)
     {
@@ -108,52 +112,58 @@ void Disk::readLinkedFile(const int data)
         return;
     }
 
-	count++;
-	bool found = false;
-	do {
-		LinkedDiskBlock *block = reinterpret_cast<LinkedDiskBlock*>(diskBlocks[index]);
-		for (int i = 0; i < getVolumeControlBlock().getEntriesPerDiskBlock(); i++) {
-			if (i != getVolumeControlBlock().getEntriesPerDiskBlock() - 1)
-	
-			if ((*block)[i] == data) {     
-				cout << "Read file " << data << " from B" << index << " with " << count << " access time" << endl << endl;
-				found = true;
-				break;
-			}
-		}
-		index = (*block)[getVolumeControlBlock().getEntriesPerDiskBlock() - 1];
-		count++;
-	} while (index != -1 && found == false);
+    count++;
+    bool found = false;
+    do
+    {
+        LinkedDiskBlock *block = reinterpret_cast<LinkedDiskBlock*>(diskBlocks[index]);
+        for (int i = 0; i < getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
+        {
+            if (i != getVolumeControlBlock().getEntriesPerDiskBlock() - 1)
+
+                if ((*block)[i] == data)
+                {
+                    cout << "Read file " << data << " from B" << index << " with " << count << " access time" << endl << endl;
+                    found = true;
+                    break;
+                }
+        }
+        index = (*block)[getVolumeControlBlock().getEntriesPerDiskBlock() - 1];
+        count++;
+    } while (index != -1 && found == false);
 }
 
 void Disk::readIndexedFile(const int data)
 {
     vector<string> strOperration;
-	vector< vector<int>> theUltimateVector;
-	string word;
+    vector<vector<int>> theUltimateVector;
+    string word;
 
-	vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-	for (auto x : fileInfo) {
+    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
+    for (auto x : fileInfo)
+    {
+        strOperration.push_back(x->toString());
+    }
 
-		strOperration.push_back(x->toString());
-	}
-
-	for (int i = 0; i < strOperration.size(); i++) {
-		vector<int> myNumbers;
-		for (stringstream sst(strOperration[i]); getline(sst, word, ',');) {
-
-			myNumbers.push_back(stoi(word));
-		}
-		theUltimateVector.push_back(myNumbers);
-	}
-	int blockIndex = -1;
-	int count = 0;
-	for (int i = 0; i < theUltimateVector.size(); i++) {
-		if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0) {
-			blockIndex = theUltimateVector[i][1];
-			break;
-		}
-	}
+    for (int i = 0; i < strOperration.size(); i++)
+    {
+        vector<int> myNumbers;
+        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
+        {
+            myNumbers.push_back(stoi(word));
+        }
+        theUltimateVector.push_back(myNumbers);
+    }
+    int blockIndex = -1;
+    int count = 0;
+    for (int i = 0; i < theUltimateVector.size(); i++)
+    {
+        if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0)
+        {
+            blockIndex = theUltimateVector[i][1];
+            break;
+        }
+    }
 
     if (blockIndex == -1)
     {
@@ -161,23 +171,26 @@ void Disk::readIndexedFile(const int data)
         return;
     }
 
-	count++;
-	IndexedDiskBlock *block = reinterpret_cast<IndexedDiskBlock*>(diskBlocks[blockIndex]);
-	for (int i = 0; i != getVolumeControlBlock().getEntriesPerDiskBlock(); i++) {
-		if ((*block)[i] == -1)
-			break;
+    count++;
+    IndexedDiskBlock *block = reinterpret_cast<IndexedDiskBlock*>(diskBlocks[blockIndex]);
+    for (int i = 0; i != getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
+    {
+        if ((*block)[i] == -1)
+            break;
 
-		count++;
-		auto indexBlockIndex = (*block)[i];
-		ContiguousDiskBlock *block_c = reinterpret_cast<ContiguousDiskBlock*>(diskBlocks[indexBlockIndex]);
+        count++;
+        auto indexBlockIndex = (*block)[i];
+        ContiguousDiskBlock *block_c = reinterpret_cast<ContiguousDiskBlock*>(diskBlocks[indexBlockIndex]);
 
-		for (int j = 0; j != getVolumeControlBlock().getEntriesPerDiskBlock(); j++) {
-			if ((*block_c)[j] == data) {
-				cout << "Read file " << data << " from B" << indexBlockIndex << " with " << count << " access time" << endl << endl;
-				return;
-			}
-		}
-	}
+        for (int j = 0; j != getVolumeControlBlock().getEntriesPerDiskBlock(); j++)
+        {
+            if ((*block_c)[j] == data)
+            {
+                cout << "Read file " << data << " from B" << indexBlockIndex << " with " << count << " access time" << endl << endl;
+                return;
+            }
+        }
+    }
 }
 
 void Disk::readCustomFile(const int data)
