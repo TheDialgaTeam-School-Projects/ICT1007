@@ -16,35 +16,15 @@ using std::stringstream;
 
 void Disk::readContiguousFile(const int data)
 {
-    vector<string> strOperration;
-    vector<vector<int>> theUltimateVector;
-    string word;
-
-    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-    for (auto x : fileInfo)
-    {
-        strOperration.push_back(x->toString());
-    }
-
-    for (int i = 0; i < strOperration.size(); i++)
-    {
-        vector<int> myNumbers;
-        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
-        {
-            myNumbers.push_back(stoi(word));
-        }
-        theUltimateVector.push_back(myNumbers);
-    }
     int index = -1;
-    int length;
-    int count = 0;
-    for (int i = 0; i < theUltimateVector.size(); i++)
+    int length = 0;
+    auto info = getDirectoryBlock().getFilesInformation();
+    for (int i = 0; i < getDirectoryBlock().getFilesInformation().size(); i++)
     {
-        if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0)
+        if (data - info[i]->getFileName() < 100 && data - info[i]->getFileName() > 0)
         {
-            index = theUltimateVector[i][1];
-            length = theUltimateVector[i][2];
-            break;
+            index = reinterpret_cast<ContiguousFileInformation*>(info[i])->getStartBlockIndex();
+            length = reinterpret_cast<ContiguousFileInformation*>(info[i])->getLength();
         }
     }
 
@@ -54,7 +34,7 @@ void Disk::readContiguousFile(const int data)
         return;
     }
 
-    count++;
+    int count = 1;
     bool found = false;
     do
     {
@@ -76,33 +56,13 @@ void Disk::readContiguousFile(const int data)
 
 void Disk::readLinkedFile(const int data)
 {
-    vector<string> strOperration;
-    vector<vector<int>> theUltimateVector;
-    string word;
-
-    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-    for (auto x : fileInfo)
-    {
-        strOperration.push_back(x->toString());
-    }
-
-    for (int i = 0; i < strOperration.size(); i++)
-    {
-        vector<int> myNumbers;
-        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
-        {
-            myNumbers.push_back(stoi(word));
-        }
-        theUltimateVector.push_back(myNumbers);
-    }
     int index = -1;
-    int count = 0;
-    for (int i = 0; i < theUltimateVector.size(); i++)
+    auto info = getDirectoryBlock().getFilesInformation();
+    for (int i = 0; i < getDirectoryBlock().getFilesInformation().size(); i++)
     {
-        if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0)
+        if (data - info[i]->getFileName() < 100 && data - info[i]->getFileName() > 0)
         {
-            index = theUltimateVector[i][1];
-            break;
+            index = reinterpret_cast<LinkedFileInformation*>(info[i])->getStartBlockIndex();
         }
     }
 
@@ -112,7 +72,7 @@ void Disk::readLinkedFile(const int data)
         return;
     }
 
-    count++;
+    int count = 1;
     bool found = false;
     do
     {
@@ -130,49 +90,29 @@ void Disk::readLinkedFile(const int data)
         }
         index = (*block)[getVolumeControlBlock().getEntriesPerDiskBlock() - 1];
         count++;
-    } while (index != -1 && found == false);
+    } while (index != -1 && !found);
 }
 
 void Disk::readIndexedFile(const int data)
 {
-    vector<string> strOperration;
-    vector<vector<int>> theUltimateVector;
-    string word;
-
-    vector<AbstractFileInformation*> fileInfo = getDirectoryBlock().getFilesInformation();
-    for (auto x : fileInfo)
+    int index = -1;
+    auto info = getDirectoryBlock().getFilesInformation();
+    for (int i = 0; i < getDirectoryBlock().getFilesInformation().size(); i++)
     {
-        strOperration.push_back(x->toString());
-    }
-
-    for (int i = 0; i < strOperration.size(); i++)
-    {
-        vector<int> myNumbers;
-        for (stringstream sst(strOperration[i]); getline(sst, word, ',');)
+        if (data - info[i]->getFileName() < 100 && data - info[i]->getFileName() > 0)
         {
-            myNumbers.push_back(stoi(word));
-        }
-        theUltimateVector.push_back(myNumbers);
-    }
-    int blockIndex = -1;
-    int count = 0;
-    for (int i = 0; i < theUltimateVector.size(); i++)
-    {
-        if (data - theUltimateVector[i][0] < 100 && data - theUltimateVector[i][0] > 0)
-        {
-            blockIndex = theUltimateVector[i][1];
-            break;
+            index = reinterpret_cast<IndexedFileInformation*>(info[i])->getIndexBlockIndex();
         }
     }
 
-    if (blockIndex == -1)
+    if (index == -1)
     {
         cout << "File with the data " << data << " could not be found" << endl << endl;
         return;
     }
 
-    count++;
-    IndexedDiskBlock *block = reinterpret_cast<IndexedDiskBlock*>(diskBlocks[blockIndex]);
+    int count = 1;
+    IndexedDiskBlock *block = reinterpret_cast<IndexedDiskBlock*>(diskBlocks[index]);
     for (int i = 0; i != getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
     {
         if ((*block)[i] == -1)
