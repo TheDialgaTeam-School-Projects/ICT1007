@@ -177,7 +177,7 @@ void Disk::addIndexedFile(const int fileName, vector<int> &data)
 
     const uint64_t directorySize = getVolumeControlBlock().getEntriesPerDiskBlock() - 1;
 
-    if (freeBlockIndex.empty() || getDirectoryBlock().getFilesInformation().size() + 1 > directorySize)
+    if (freeBlockIndex.empty() || getDirectoryBlock().getFilesInformation().size() + 1 > directorySize || freeBlockIndex.size() - 1 > getVolumeControlBlock().getEntriesPerDiskBlock())
     {
         printDiskIsFull(fileName);
         return;
