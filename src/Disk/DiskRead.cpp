@@ -18,6 +18,7 @@ void Disk::readContiguousFile(const int data)
 {
     int index = -1;
     int length = 0;
+    int fileName;
     auto info = getDirectoryBlock().getFilesInformation();
     for (int i = 0; i < getDirectoryBlock().getFilesInformation().size(); i++)
     {
@@ -25,6 +26,7 @@ void Disk::readContiguousFile(const int data)
         {
             index = reinterpret_cast<ContiguousFileInformation*>(info[i])->getStartBlockIndex();
             length = reinterpret_cast<ContiguousFileInformation*>(info[i])->getLength();
+            fileName = info[i]->getFileName();
         }
     }
 
@@ -38,31 +40,33 @@ void Disk::readContiguousFile(const int data)
     bool found = false;
     do
     {
+        count++;
         ContiguousDiskBlock *block = reinterpret_cast<ContiguousDiskBlock*>(diskBlocks[index]);
         for (int i = 0; i < getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
         {
             if ((*block)[i] == data)
             {
-                cout << "Read file " << data << " from B" << index << " with " << count << " access time" << endl << endl;
+                cout << "Read file " << fileName << "(" << data << ") from B" << index << " with " << count << " access time" << endl << endl;
                 found = true;
                 break;
             }
             length--;
         }
         index++;
-        count++;
     } while (length != 0 && !found);
 }
 
 void Disk::readLinkedFile(const int data)
 {
     int index = -1;
+    int fileName;
     auto info = getDirectoryBlock().getFilesInformation();
     for (int i = 0; i < getDirectoryBlock().getFilesInformation().size(); i++)
     {
         if (data - info[i]->getFileName() < 100 && data - info[i]->getFileName() > 0)
         {
             index = reinterpret_cast<LinkedFileInformation*>(info[i])->getStartBlockIndex();
+            fileName = info[i]->getFileName();
         }
     }
 
@@ -76,6 +80,7 @@ void Disk::readLinkedFile(const int data)
     bool found = false;
     do
     {
+        count++;
         LinkedDiskBlock *block = reinterpret_cast<LinkedDiskBlock*>(diskBlocks[index]);
         for (int i = 0; i < getVolumeControlBlock().getEntriesPerDiskBlock(); i++)
         {
@@ -83,25 +88,26 @@ void Disk::readLinkedFile(const int data)
 
                 if ((*block)[i] == data)
                 {
-                    cout << "Read file " << data << " from B" << index << " with " << count << " access time" << endl << endl;
+                    cout << "Read file " << fileName << "(" << data << ") from B" << index << " with " << count << " access time" << endl << endl;
                     found = true;
                     break;
                 }
         }
         index = (*block)[getVolumeControlBlock().getEntriesPerDiskBlock() - 1];
-        count++;
     } while (index != -1 && !found);
 }
 
 void Disk::readIndexedFile(const int data)
 {
     int index = -1;
+    int fileName;
     auto info = getDirectoryBlock().getFilesInformation();
     for (int i = 0; i < getDirectoryBlock().getFilesInformation().size(); i++)
     {
         if (data - info[i]->getFileName() < 100 && data - info[i]->getFileName() > 0)
         {
             index = reinterpret_cast<IndexedFileInformation*>(info[i])->getIndexBlockIndex();
+            fileName = info[i]->getFileName();
         }
     }
 
@@ -126,7 +132,7 @@ void Disk::readIndexedFile(const int data)
         {
             if ((*block_c)[j] == data)
             {
-                cout << "Read file " << data << " from B" << indexBlockIndex << " with " << count << " access time" << endl << endl;
+                cout << "Read file " << fileName << "(" << data << ") from B" << index << " with " << count << " access time" << endl << endl;
                 return;
             }
         }
